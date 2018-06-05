@@ -1,5 +1,6 @@
 const path = require('path');
 const express = require('express');
+const opn = require('opn');
 
 function ensureArray(data) {
     return Array.isArray(data) ? data : [data];
@@ -24,7 +25,10 @@ function startServer(config) {
         applyMiddleware(app, config);
     }
 
-    app.listen(port, () => console.log(`Started server on port ${port}`));
+    app.listen(port, () => {
+        console.log(`Started server on port ${port}`);
+        opn(`http://localhost:${port}`);
+    });
 }
 
 function run(config, options) {
