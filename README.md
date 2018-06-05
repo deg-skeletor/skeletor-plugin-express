@@ -32,7 +32,8 @@ The `run()` method executes a plugin's primary task. It is the primary way (and,
 {
     "port": 3001,
     "entry": '../dist',
-    "directory": __dirname
+    "currentDirectory": __dirname,
+    "middleware": []
 }
 
 **port**
@@ -52,9 +53,28 @@ Value: `__dirname`
 
 The path to the project directory on the user's machine. This should always be the node variable `__dirname`.
 
+**middleware**
+Type: `Object[]`
+
+A list of middleware objects to be used for server. See [middleware](#middleware) for more details.
+
+#### Middleware
+
+**route**
+Type: `String`
+Default: `/`
+
+The route for which the middleware function applies.
+
+**fn**
+Type: `Function`
+
+The middleware functions. Usually loaded from a separate file using the `require()` syntax
+
+For more information about writing middleware for Express, see their [documentation](https://expressjs.com/en/guide/writing-middleware.html)
 
 #### Return Value
-A Promise that resolves to a [Status object](#the-status-object).
+A Promise that resolves to a Status object.
 
 **status**
 Type: `String`

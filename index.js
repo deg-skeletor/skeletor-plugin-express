@@ -1,11 +1,28 @@
 const path = require('path');
 const express = require('express');
 
+function ensureArray(data) {
+    return Array.isArray(data) ? data : [data];
+}
+
+function applyMiddleware(app, config) {
+    ensureArray(config.middleware).forEach(item => {
+        if (item.fn) {
+             const route = item.route || '/';
+            app.use(route, item.fn);
+        }
+    });
+}
+
 function startServer(config) {
     const app = express();
     const port = config.port || 3000;
 
     app.use('/', express.static(path.normalize(`${config.currentDirectory}/${config.entry}`)));
+
+    if (config.middleware) {
+        applyMiddleware(app, config);
+    }
 
     app.listen(port, () => console.log(`Started server on port ${port}`));
 }
