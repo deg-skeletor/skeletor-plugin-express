@@ -1,24 +1,24 @@
 const path = require('path');
+const express = require('express');
 
 function startServer(config) {
-    const express = require('express');
     const app = express();
     const port = config.port || 3000;
 
-    app.use('/', express.static(path.normalize(`${config.directory}/${config.entry}`)));
+    app.use('/', express.static(path.normalize(`${config.currentDirectory}/${config.entry}`)));
 
     app.listen(port, () => console.log(`Started server on port ${port}`));
 }
 
 function run(config, options) {
     return new Promise((resolve, reject) => {
-        if (config.entry) {
+        if (config.currentDirectory && config.entry) {
             startServer(config);
             resolve({
                 status: 'running'
             });
         } else {
-            const message = 'No entry point specified.';
+            const message = `Error with config. Directory: ${config.currentDirectory}, Entry: ${config.entry}`;
             options.logger.error(message);
             reject({
                 status: 'error',
@@ -33,10 +33,3 @@ module.exports = skeletorLocalServer = () => (
         run
     }
 );
-
-/*
-{
-    port?: 3000,
-    entryPoint: '/public'
-}
-*/
