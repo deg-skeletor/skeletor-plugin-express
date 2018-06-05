@@ -46,7 +46,7 @@ Type: `String`
 
 The relative path to the directory or file that will be the entry point to the server. This path should be relative to the config file.
 
-**directory**
+**currentDirectory**
 Type: `String`
 Value: `__dirname`
 
