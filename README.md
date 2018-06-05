@@ -71,6 +71,25 @@ Type: `Function`
 
 The middleware functions. Usually loaded from a separate file using the `require()` syntax
 
+Example middleware obj:
+```
+{
+    "route": "/hello",
+    "fn": require('../source/middleware/testMiddleware')
+}
+```
+
+where the `testMiddleware` file looks like this:
+```
+const middleware = function(req, res, next) {
+    req.greeting = 'Hello World';
+
+    res.send(req.greeting);
+}
+
+module.exports = middleware;
+```
+
 For more information about writing middleware for Express, see their [documentation](https://expressjs.com/en/guide/writing-middleware.html)
 
 #### Return Value
