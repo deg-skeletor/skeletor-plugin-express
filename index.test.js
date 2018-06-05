@@ -1,5 +1,6 @@
 const skeletorLocalServer = require('./index');
 
+let express;
 jest.mock('express');
 
 global.console = {
@@ -16,11 +17,13 @@ let consoleSpy;
 describe('local server plugin', () => {
 
     beforeEach(() => {
+        express = require('express');
         consoleSpy = jest.spyOn(global.console, 'log');
     });
 
     afterEach(() => {
         consoleSpy.mockReset();
+        express.__clearRoutes();
     });
 
     it('should error when no entry point specified', async () => {
@@ -88,8 +91,72 @@ describe('local server plugin', () => {
 
     });
 
-    xit('should handle middleware passed in', () => {
+    describe('middleware', () => {
+        it('should default route to /', () => {
+            const config = {
+                port: 3001,
+                entry: 'testDir',
+                currentDirectory: 'testDir',
+                middleware: [{
+                    fn: () => true
+                }]
+            };
+            return skeletorLocalServer().run(config, options).then(() => {
+                const routeList = express.__getItemsForRoute('/');
+                expect(routeList).toHaveLength(2);
+                expect(typeof routeList[1]).toBe('function');
+                expect(routeList[1]()).toBe(true);
+            });
+        });
 
+        it('should not apply middleware if no function defined', () => {
+            const config = {
+                port: 3001,
+                entry: 'testDir',
+                currentDirectory: 'testDir',
+                middleware: [{}]
+            };
+            return skeletorLocalServer().run(config, options).then(() => {
+                const routeList = express.__getItemsForRoute('/');
+                expect(routeList).toHaveLength(1);
+            });
+        });
+
+        it('should ensure that config is an array', () => {
+            const config = {
+                port: 3001,
+                entry: 'testDir',
+                currentDirectory: 'testDir',
+                middleware: {
+                    fn: () => true
+                }
+            };
+            return skeletorLocalServer().run(config, options).then(() => {
+                const routeList = express.__getItemsForRoute('/');
+                expect(routeList).toHaveLength(2);
+                expect(typeof routeList[1]).toBe('function');
+                expect(routeList[1]()).toBe(true);
+            });
+        });
+
+        it('should apply middleware to specified route', () => {
+            const route = '/hello';
+            const config = {
+                port: 3001,
+                entry: 'testDir',
+                currentDirectory: 'testDir',
+                middleware: {
+                    route: route,
+                    fn: () => true
+                }
+            };
+            return skeletorLocalServer().run(config, options).then(() => {
+                const routeList = express.__getItemsForRoute('/hello');
+                expect(routeList).toHaveLength(1);
+                expect(typeof routeList[0]).toBe('function');
+                expect(routeList[0]()).toBe(true);
+            });
+        });
     });
 
     xit('should refresh browser on file update', () => {
