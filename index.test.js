@@ -2,6 +2,7 @@ const skeletorLocalServer = require('./index');
 
 let express;
 jest.mock('express');
+jest.mock('opn');
 
 const logger = {
     info: () => {},
@@ -174,14 +175,14 @@ describe('local server plugin', () => {
                 currentDirectory: 'testDir',
                 middleware: {
                     route: route,
-                    fn: () => true
+                    fn: () => 'hello'
                 }
             };
             return skeletorLocalServer().run(config, options).then(() => {
                 const routeList = express.__getItemsForRoute('/hello');
                 expect(routeList).toHaveLength(1);
                 expect(typeof routeList[0]).toBe('function');
-                expect(routeList[0]()).toBe(true);
+                expect(routeList[0]()).toBe('hello');
             });
         });
     });
