@@ -1,4 +1,5 @@
-let routeMap = {};
+let __routeMap = {};
+let __portInUse = '';
 
 function server() {
     return {
@@ -7,16 +8,17 @@ function server() {
     };
 }
 
-function use(route, item) {
-    if (routeMap[route]) {
-        routeMap[route].push(item);
+function use(route, val) {
+    if (__routeMap[route]) {
+        __routeMap[route].push(val);
     } else {
-        routeMap[route] = [item];
+        __routeMap[route] = [val];
     }
     return;
 }
 
 function listen(port, callback) {
+    __portInUse = port;
     callback();
 }
 
@@ -25,14 +27,20 @@ function staticFn(path) {
 }
 
 function __getItemsForRoute(route) {
-    return routeMap[route];
+    return __routeMap[route];
 }
 
-function __clearRoutes() {
-    routeMap = {};
+function __getPortInUse() {
+    return __portInUse;
+}
+
+function __resetServer() {
+    __routeMap = {};
+    __portInUse = '';
 }
 
 server.static = staticFn;
 server.__getItemsForRoute = __getItemsForRoute;
-server.__clearRoutes = __clearRoutes;
+server.__getPortInUse = __getPortInUse;
+server.__resetServer = __resetServer;
 module.exports = server;

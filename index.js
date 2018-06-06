@@ -15,7 +15,7 @@ function applyMiddleware(app, config) {
     });
 }
 
-function startServer(config) {
+function startServer(config, logger) {
     const app = express();
     const port = config.port || 3000;
 
@@ -26,7 +26,7 @@ function startServer(config) {
     }
 
     app.listen(port, () => {
-        console.log(`Started server on port ${port}`);
+        logger.info(`Started server on port ${port}`);
         opn(`http://localhost:${port}`);
     });
 }
@@ -34,7 +34,7 @@ function startServer(config) {
 function run(config, options) {
     return new Promise((resolve, reject) => {
         if (config.currentDirectory && config.entry) {
-            startServer(config);
+            startServer(config, options.logger);
             resolve({
                 status: 'running'
             });
