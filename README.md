@@ -32,7 +32,7 @@ The `run()` method executes a plugin's primary task. It is the primary way (and,
 {
     "port": 3001,
     "entry": '../dist',
-    "directory": __dirname
+    "currentDirectory": __dirname
 }
 
 **port**

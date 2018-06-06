@@ -1,19 +1,19 @@
 const path = require('path');
 const express = require('express');
 
-function startServer(config) {
+function startServer(config, logger) {
     const app = express();
     const port = config.port || 3000;
 
     app.use('/', express.static(path.normalize(`${config.currentDirectory}/${config.entry}`)));
 
-    app.listen(port, () => console.log(`Started server on port ${port}`));
+    app.listen(port, () => logger.info(`Started server on port ${port}`));
 }
 
 function run(config, options) {
     return new Promise((resolve, reject) => {
         if (config.currentDirectory && config.entry) {
-            startServer(config);
+            startServer(config, options.logger);
             resolve({
                 status: 'running'
             });

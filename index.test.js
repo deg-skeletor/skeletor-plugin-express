@@ -34,7 +34,7 @@ describe('local server plugin', () => {
         await expect(skeletorLocalServer().run(config, options)).rejects.toEqual(expectedError);
     });
 
-    it('should error when no entry point specified', async () => {
+    it('should error when no current directory specified', async () => {
         const expectedError = {
             status: 'error',
             message: 'Error with config. Directory: undefined, Entry: testDir'
