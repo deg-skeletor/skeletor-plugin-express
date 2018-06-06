@@ -15,6 +15,12 @@ function applyMiddleware(app, config) {
     });
 }
 
+function handleNotFound(req, res, next, logger) {
+    const message = `Cannot ${req.method} at "${req.url}". Please check your configuration`;
+    logger.error(message);
+    res.status(404).send(message);
+}
+
 function startServer(config, logger) {
     const app = express();
     const port = config.port || 3000;
@@ -24,6 +30,8 @@ function startServer(config, logger) {
     if (config.middleware) {
         applyMiddleware(app, config);
     }
+
+    app.use((req, res, next) => handleNotFound(req, res, next, logger));
 
     app.listen(port, () => {
         logger.info(`Started server on port ${port}`);
