@@ -1,7 +1,7 @@
 {
-    "name": "skeletor-plugin-local-server",
+    "name": "skeletor-plugin-express",
     "version": "0.0.1",
-    "description": "A Skeletor plugin to run a local server.",
+    "description": "A Skeletor plugin to run a local Express server.",
     "main": "index.js",
     "scripts": {
         "test": "jest",
@@ -11,7 +11,7 @@
     "license": "ISC",
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/deg-skeletor/skeletor-plugin-local-server.git"
+        "url": "git+https://github.com/deg-skeletor/skeletor-plugin-express.git"
     },
     "peerDependencies": {
         "skeletor-core": "git+https://github.com/deg-skeletor/skeletor-core.git"
