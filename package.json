@@ -1,6 +1,6 @@
 {
     "name": "skeletor-plugin-local-server",
-    "version": "0.0.0",
+    "version": "0.0.1",
     "description": "A Skeletor plugin to run a local server.",
     "main": "index.js",
     "scripts": {
