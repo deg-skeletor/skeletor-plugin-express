@@ -29,31 +29,42 @@ The `run()` method executes a plugin's primary task. It is the primary way (and,
 
 #### Config Options
 
+```
 {
     "port": 3001,
     "entry": '../dist',
     "currentDirectory": __dirname,
-    "middleware": []
+    "middleware": [{
+        "route": "",
+        "fn": () => {}
+    }]
 }
+```
 
 **port**
+
 Type: `Number`
+
 Default: `3000`
 
 The port that the server should use. *This is an optional config*
 
 **entry**
+
 Type: `String`
 
 The relative path to the directory or file that will be the entry point to the server. This path should be relative to the config file.
 
 **currentDirectory**
+
 Type: `String`
+
 Value: `__dirname`
 
 The path to the project directory on the user's machine. This should always be the node variable `__dirname`.
 
 **middleware**
+
 Type: `Object[]`
 
 A list of middleware objects to be used for server. See [middleware](#middleware) for more details.
@@ -61,12 +72,15 @@ A list of middleware objects to be used for server. See [middleware](#middleware
 #### Middleware
 
 **route**
+
 Type: `String`
+
 Default: `/`
 
 The route for which the middleware function applies.
 
 **fn**
+
 Type: `Function`
 
 The middleware functions. Usually loaded from a separate file using the `require()` syntax
@@ -96,12 +110,15 @@ For more information about writing middleware for Express, see their [documentat
 A Promise that resolves to a Status object.
 
 **status**
+
 Type: `String`
+
 Possible Values: `'running'`, `'error'`
 
 Contains the status of the plugin.
 
 **message**
+
 Type: `String`
 
 Contains any additional information regarding the status of the plugin.
@@ -109,4 +126,13 @@ Contains any additional information regarding the status of the plugin.
 ## Required Add-Ins
 
 [path](https://nodejs.org/docs/latest/api/path.html)
+
 a module that provides utilities for working with file and directory paths
+
+[express](https://expressjs.com/)
+
+A minimal and flexible Node.js framework with HTTP utility methods and middleware support
+
+[opn](https://github.com/sindresorhus/opn)
+
+A node module that opens websites, files, and executables. Has cross-platform support
