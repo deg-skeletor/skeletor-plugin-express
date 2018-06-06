@@ -1,0 +1,27 @@
+{
+    "name": "skeletor-plugin-local-server",
+    "version": "0.0.0",
+    "description": "A Skeletor plugin to run a local server.",
+    "main": "index.js",
+    "scripts": {
+        "test": "jest",
+        "lint": "eslint index.js"
+    },
+    "author": "Anna Scheuler <scheul93@gmail.com>",
+    "license": "ISC",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/deg-skeletor/skeletor-plugin-local-server.git"
+    },
+    "peerDependencies": {
+        "skeletor-core": "git+https://github.com/deg-skeletor/skeletor-core.git"
+    },
+    "devDependencies": {
+        "eslint": "^4.17.0",
+        "jest": "^22.2.1"
+    },
+    "dependencies": {
+        "path": "^0.12.7",
+        "express": "^4.16.3"
+    }
+}

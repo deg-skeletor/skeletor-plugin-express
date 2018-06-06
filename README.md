@@ -29,7 +29,45 @@ The `run()` method executes a plugin's primary task. It is the primary way (and,
 
 #### Config Options
 
+{
+    "port": 3001,
+    "entry": '../dist',
+    "currentDirectory": __dirname
+}
+
+**port**
+Type: `Number`
+Default: `3000`
+
+The port that the server should use. *This is an optional config*
+
+**entry**
+Type: `String`
+
+The relative path to the directory or file that will be the entry point to the server. This path should be relative to the config file.
+
+**currentDirectory**
+Type: `String`
+Value: `__dirname`
+
+The path to the project directory on the user's machine. This should always be the node variable `__dirname`.
+
+
 #### Return Value
 A Promise that resolves to a [Status object](#the-status-object).
 
+**status**
+Type: `String`
+Possible Values: `'running'`, `'error'`
+
+Contains the status of the plugin.
+
+**message**
+Type: `String`
+
+Contains any additional information regarding the status of the plugin.
+
 ## Required Add-Ins
+
+[path](https://nodejs.org/docs/latest/api/path.html)
+a module that provides utilities for working with file and directory paths
