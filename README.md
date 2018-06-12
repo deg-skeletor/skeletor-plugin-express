@@ -1,4 +1,6 @@
 # Skeletor Express Plugin
+[![Build Status](https://travis-ci.org/deg-skeletor/skeletor-plugin-express.svg?branch=master)](https://travis-ci.org/deg-skeletor/skeletor-plugin-express)
+
 The purpose of this plugin is to runu a local Express server.
 
 This is a functioning plugin that can be installed as-is to a Skeletor-equipped project. 
