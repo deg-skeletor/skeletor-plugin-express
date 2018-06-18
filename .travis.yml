@@ -1,6 +1,15 @@
 language: node_js
 node_js:
-  - "node"
+- node
 cache:
   directories:
-    - "node_modules"
+  - node_modules
+deploy:
+  provider: npm
+  email: scheul93@gmail.com
+  api_key:
+    secure: uuouUfbZQOntXahaPaDBAaP9eP/MolxokSVieQC7n749tC/Kw6GF9fMBRlrwANOLZ6IdpzWCjzXI/szXQghnDA5RYI2F/Gi4VGuDjWxkiNywOESV/eQ7ipeWwmMepx2YUUu+ZtCH5icWv9tJXwjfTZgke+z1t3zdLoOLrt34VeI1h83L2RX/nm4ZnYsai5qpn7LyE+FdaNLssInJbK/4IQZ09E1wBnAy9TCFvxY8RnbX1BQ/0PfFkNK2zb/25UZYucbjxPd4a/TRdghCx0DyQ6n4iR+f3+kH2LgSd4yOxn/OvBfCwJH0zw9xGOgw9ZErUmjX18V1AJhfV4U+Ysh2ujsG8ODEqG1pdVfy0Ifh5Qo5Kq7deCX0oF+KnME3R6ejdskW7pnXcuKhiX0vAV2H46uBDKRo5rNjfTy9NCi4KcX2kh8jK8aJGLtvFIjbnHcsRkwCAdQ9Z6y9QmcW4H2H6VCDuKUVkseTPPxGBxRveLn2COjM5fdiD7VqBrXlF9RE0c+nUjJXLeiUW8qpcusz1JhkaSM12MqSR+EPw8vz0XgfPWzRuf8gwEVp2rAiU9Uq/dmevYDIQLiRk0tcUpIZDEOWwGY4izclqQbckoOviv8N84NxMa2e7Yi5NeD6r3nGAxt3bS0YWbw/nt6HHW86RY6zp1HZFiu3fIngU0ZmcUM=
+  on:
+    branch: master
+    tags: true
+    repo: deg-skeletor/skeletor-plugin-express

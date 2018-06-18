@@ -1,5 +1,5 @@
 {
-    "name": "skeletor-plugin-express",
+    "name": "@skeletor/plugin-express",
     "version": "0.0.1",
     "description": "A Skeletor plugin to run a local Express server.",
     "main": "index.js",
@@ -24,5 +24,14 @@
         "opn": "^5.3.0",
         "path": "^0.12.7",
         "express": "^4.16.3"
-    }
+    },
+    "publishConfig": {
+        "access": "public"
+    },
+    "keywords": [
+        "skeletor",
+        "skeletor-plugin",
+        "express",
+        "server"
+    ]
 }
