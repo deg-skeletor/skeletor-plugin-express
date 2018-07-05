@@ -83,9 +83,9 @@ The route for which the middleware function applies.
 
 **fn**
 
-Type: `Function`
+Type: `Function` or `Array`
 
-The middleware functions. Usually loaded from a separate file using the `require()` syntax
+The middleware function or an array of functions. Usually loaded from a separate file using the `require()` syntax
 
 Example middleware obj:
 ```

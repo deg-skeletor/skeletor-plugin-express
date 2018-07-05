@@ -10,7 +10,7 @@ function applyMiddleware(app, config) {
     ensureArray(config.middleware).forEach(item => {
         if (item.fn) {
              const route = item.route || '/';
-            app.use(route, item.fn);
+            app.use(route, ...item.fn);
         }
     });
 }
