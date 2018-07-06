@@ -25,7 +25,10 @@ function startServer(config, logger) {
     const app = express();
     const port = config.port || 3000;
 
-    app.use('/', express.static(path.normalize(`${config.currentDirectory}/${config.entry}`)));
+    config.entryPoints.forEach(entry => {
+        const urlPath = entry.route || '/';
+        app.use(urlPath, express.static(path.normalize(`${config.currentDirectory}/${entry.entry}`)));
+    });
 
     if (config.middleware) {
         applyMiddleware(app, config);
@@ -41,13 +44,13 @@ function startServer(config, logger) {
 
 function run(config, options) {
     return new Promise((resolve, reject) => {
-        if (config.currentDirectory && config.entry) {
+        if (config.currentDirectory && config.entryPoints && config.entryPoints.length) {
             startServer(config, options.logger);
             resolve({
                 status: 'running'
             });
         } else {
-            const message = `Error with config. Directory: ${config.currentDirectory}, Entry: ${config.entry}`;
+            const message = `Error with config. Directory: ${config.currentDirectory}, Entry points: ${config.entryPoints}`;
             options.logger.error(message);
             reject({
                 status: 'error',

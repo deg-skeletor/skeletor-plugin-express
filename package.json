@@ -1,6 +1,6 @@
 {
     "name": "@deg-skeletor/plugin-express",
-    "version": "0.0.2",
+    "version": "1.0.0",
     "description": "A Skeletor plugin to run a local Express server.",
     "main": "index.js",
     "scripts": {
@@ -14,7 +14,7 @@
         "url": "git+https://github.com/deg-skeletor/skeletor-plugin-express.git"
     },
     "peerDependencies": {
-        "@deg-skeletor/core": "^0.1.0"
+        "@deg-skeletor/core": "^1.0.0"
     },
     "devDependencies": {
         "eslint": "^4.17.0",

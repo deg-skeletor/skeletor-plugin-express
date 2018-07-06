@@ -23,10 +23,10 @@ describe('local server plugin', () => {
         logInfoSpy.mockReset();
     });
 
-    it('should error when no entry point specified', async () => {
+    it('should error when no entry points specified', async () => {
         const expectedError = {
             status: 'error',
-            message: 'Error with config. Directory: testDir, Entry: undefined'
+            message: 'Error with config. Directory: testDir, Entry points: undefined'
         };
         const config = {
             currentDirectory: 'testDir'
@@ -37,10 +37,10 @@ describe('local server plugin', () => {
     it('should error when no current directory specified', async () => {
         const expectedError = {
             status: 'error',
-            message: 'Error with config. Directory: undefined, Entry: testDir'
+            message: 'Error with config. Directory: undefined, Entry points: testDir'
         };
         const config = {
-            entry: 'testDir'
+            entryPoints: ['testDir']
         };
         await expect(skeletorLocalServer().run(config, options)).rejects.toEqual(expectedError);
     });
@@ -51,7 +51,7 @@ describe('local server plugin', () => {
         };
         const expectedMessage = 'Started server on port 3000';
         const config = {
-            entry: 'testDir',
+            entryPoints: ['testDir'],
             currentDirectory: 'testDir'
         };
 
@@ -62,24 +62,10 @@ describe('local server plugin', () => {
         });
     });
 
-    it('should assign asset path to correct route', () => {
-        const expectedRouteVal = 'testDir/testDir';
-        const config = {
-            entry: 'testDir',
-            currentDirectory: 'testDir'
-        };
-
-        return skeletorLocalServer().run(config, options).then(() => {
-            const routeItems = express.__getItemsForRoute('/');
-            expect(routeItems).toHaveLength(1);
-            expect(routeItems[0]).toEqual(expectedRouteVal);
-        });
-    });
-
     it('should default port to 3000', () => {
         const expectedPort = 3000;
         const config = {
-            entry: 'testDir',
+            entryPoints: ['testDir'],
             currentDirectory: 'testDir'
         };
 
@@ -97,7 +83,7 @@ describe('local server plugin', () => {
         const expectedMessage = 'Started server on port 3001';
         const config = {
             port: expectedPort,
-            entry: 'testDir',
+            entryPoints: ['testDir'],
             currentDirectory: 'testDir'
         };
 
@@ -111,19 +97,57 @@ describe('local server plugin', () => {
         });
     });
 
-    xit('should serve up patternlab patterns', () => {
+    describe('entry point(s)', () => {
+        it('should assign asset path to correct route', () => {
+            const expectedRouteVals = ['testDir/patternDir', 'testDir/appDir'];
+            const config = {
+                entryPoints: [{
+                    entry: 'patternDir',
+                    route: '/patterns'
+                },
+                {
+                    entry: 'appDir',
+                    route: '/app'
+                }],
+                currentDirectory: 'testDir'
+            };
 
-    });
+            return skeletorLocalServer().run(config, options).then(() => {
+                const patternRouteItems = express.__getItemsForRoute('/patterns');
+                expect(patternRouteItems).toHaveLength(1);
+                expect(patternRouteItems[0]).toEqual(expectedRouteVals[0]);
 
-    xit('should serve up a React app', () => {
+                const appRouteItems = express.__getItemsForRoute('/app');
+                expect(appRouteItems).toHaveLength(1);
+                expect(appRouteItems[0]).toEqual(expectedRouteVals[1]);
+            });
+        });
 
+        it('should default path to root', () => {
+            const expectedRouteVals = ['testDir/patternDir', 'testDir/appDir'];
+            const config = {
+                entryPoints: [{
+                    entry: 'patternDir'
+                },
+                {
+                    entry: 'appDir'
+                }],
+                currentDirectory: 'testDir'
+            };
+
+            return skeletorLocalServer().run(config, options).then(() => {
+                const patternRouteItems = express.__getItemsForRoute('/');
+                expect(patternRouteItems).toHaveLength(2);
+                expect(patternRouteItems).toEqual(expectedRouteVals);
+            });
+        });
     });
 
     describe('middleware', () => {
         it('should default route to /', () => {
             const config = {
                 port: 3001,
-                entry: 'testDir',
+                entryPoints: [{entry: 'testDir'}],
                 currentDirectory: 'testDir',
                 middleware: [{
                     fn: () => true
@@ -140,7 +164,7 @@ describe('local server plugin', () => {
         it('should not apply middleware if no function defined', () => {
             const config = {
                 port: 3001,
-                entry: 'testDir',
+                entryPoints: [{entry: 'testDir'}],
                 currentDirectory: 'testDir',
                 middleware: [{}]
             };
@@ -153,7 +177,7 @@ describe('local server plugin', () => {
         it('should ensure that config is an array', () => {
             const config = {
                 port: 3001,
-                entry: 'testDir',
+                entryPoints: [{entry: 'testDir'}],
                 currentDirectory: 'testDir',
                 middleware: {
                     fn: () => true
@@ -171,7 +195,7 @@ describe('local server plugin', () => {
             const route = '/hello';
             const config = {
                 port: 3001,
-                entry: 'testDir',
+                entryPoints: [{entry: 'testDir'}],
                 currentDirectory: 'testDir',
                 middleware: {
                     route: route,

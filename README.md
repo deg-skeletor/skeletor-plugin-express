@@ -1,7 +1,7 @@
 # Skeletor Express Plugin
 [![Build Status](https://travis-ci.org/deg-skeletor/skeletor-plugin-express.svg?branch=master)](https://travis-ci.org/deg-skeletor/skeletor-plugin-express)
 
-The purpose of this plugin is to runu a local Express server.
+The purpose of this plugin is to run a local Express server.
 
 This is a functioning plugin that can be installed as-is to a Skeletor-equipped project. 
 
@@ -34,8 +34,13 @@ The `run()` method executes a plugin's primary task. It is the primary way (and,
 ```
 {
     "port": 3001,
-    "entry": '../dist',
     "currentDirectory": __dirname,
+    "entryPoints": [
+        {
+            "entry": '../dist',
+            "route": '/app'
+        }
+    ],
     "middleware": [{
         "route": "",
         "fn": () => {}
@@ -51,12 +56,6 @@ Default: `3000`
 
 The port that the server should use. *This is an optional config*
 
-**entry**
-
-Type: `String`
-
-The relative path to the directory or file that will be the entry point to the server. This path should be relative to the config file.
-
 **currentDirectory**
 
 Type: `String`
@@ -64,6 +63,17 @@ Type: `String`
 Value: `__dirname`
 
 The path to the project directory on the user's machine. This should always be the node variable `__dirname`.
+
+**entryPoints**
+
+Type: `Object[]`
+
+A list of entry points to route to.
+
+And entryPoints object consists of:
+* `entry`: the relative path to the directory or file that will be the entry point to the server. This path should be relative to the config file.
+* `route`: the url path to get to this file. If none is provided, `/` will be used. HOWEVER, if multiple entry points use the default route, they will override each other.
+
 
 **middleware**
 
