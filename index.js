@@ -9,8 +9,9 @@ function ensureArray(data) {
 function applyMiddleware(app, config) {
     ensureArray(config.middleware).forEach(item => {
         if (item.fn) {
-             const route = item.route || '/';
-            app.use(route, item.fn);
+            const route = item.route || '/';
+            const fns = ensureArray(item.fn);
+            app.use(route, ...fns);
         }
     });
 }
