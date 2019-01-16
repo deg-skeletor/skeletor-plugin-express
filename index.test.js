@@ -49,21 +49,23 @@ describe('local server plugin', () => {
         const expectedResp = {
             status: 'running'
         };
-        const expectedMessage = 'Started server on port 3000';
+        const expectedMessage = 'Started server on port 0';
         const config = {
             entryPoints: ['testDir'],
             currentDirectory: 'testDir'
         };
+        jest.useFakeTimers();
 
         return skeletorLocalServer().run(config, options).then(resp => {
+            jest.runAllTimers();
             expect(logInfoSpy).toHaveBeenCalledTimes(1);
             expect(logInfoSpy).toHaveBeenCalledWith(expectedMessage);
             expect(resp).toEqual(expectedResp);
         });
     });
 
-    it('should default port to 3000', () => {
-        const expectedPort = 3000;
+    it('should default port to 0 (system will generate random)', () => {
+        const expectedPort = 0;
         const config = {
             entryPoints: ['testDir'],
             currentDirectory: 'testDir'
@@ -86,8 +88,11 @@ describe('local server plugin', () => {
             entryPoints: ['testDir'],
             currentDirectory: 'testDir'
         };
+        jest.useFakeTimers();
+        jest.clearAllTimers();
 
         return skeletorLocalServer().run(config, options).then(resp => {
+            jest.runAllTimers();
             expect(logInfoSpy).toHaveBeenCalledTimes(1);
             expect(logInfoSpy).toHaveBeenCalledWith(expectedMessage);
             expect(resp).toEqual(expectedResp);
