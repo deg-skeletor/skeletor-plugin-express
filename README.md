@@ -52,7 +52,7 @@ The `run()` method executes a plugin's primary task. It is the primary way (and,
 
 Type: `Number`
 
-Default: `3000`
+Default: `0` (system will select port)
 
 The port that the server should use. *This is an optional config*
 

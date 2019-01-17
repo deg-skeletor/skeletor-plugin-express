@@ -19,7 +19,12 @@ function use(route, val) {
 
 function listen(port, callback) {
     __portInUse = port;
-    callback();
+    // mocking express.listen() callback system
+    setTimeout(callback, 500);
+
+    return {
+        address: () => ({port: __portInUse})
+    };
 }
 
 function staticFn(path) {

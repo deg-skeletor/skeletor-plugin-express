@@ -24,7 +24,7 @@ function handleNotFound(req, res, next, logger) {
 
 function startServer(config, logger) {
     const app = express();
-    const port = config.port || 3000;
+    const port = config.port || 0;
 
     config.entryPoints.forEach(entry => {
         const urlPath = entry.route || '/';
@@ -37,9 +37,9 @@ function startServer(config, logger) {
 
     app.use((req, res, next) => handleNotFound(req, res, next, logger));
 
-    app.listen(port, () => {
-        logger.info(`Started server on port ${port}`);
-        opn(`http://localhost:${port}`);
+    const listener = app.listen(port, () => {
+        logger.info(`Started server on port ${listener.address().port}`);
+        opn(`http://localhost:${listener.address().port}`);
     });
 }
 
