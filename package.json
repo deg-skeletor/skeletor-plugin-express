@@ -1,6 +1,6 @@
 {
     "name": "@deg-skeletor/plugin-express",
-    "version": "1.2.4",
+    "version": "1.2.5",
     "description": "A Skeletor plugin to run a local Express server.",
     "main": "index.js",
     "engines": {
