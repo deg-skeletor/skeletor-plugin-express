@@ -64,19 +64,6 @@ describe('local server plugin', () => {
         });
     });
 
-    it('should default port to 0 (system will generate random)', () => {
-        const expectedPort = 0;
-        const config = {
-            entryPoints: ['testDir'],
-            currentDirectory: 'testDir'
-        };
-
-        return skeletorLocalServer().run(config, options).then(() => {
-            const currentPort = express.__getPortInUse();
-            expect(currentPort).toBe(expectedPort);
-        });
-    });
-
     it('should have a configurable port', () => {
         const expectedResp = {
             status: 'running'

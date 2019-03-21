@@ -1,6 +1,7 @@
 const path = require('path');
 const express = require('express');
 const opn = require('opn');
+const portfinder = require('portfinder');
 
 function ensureArray(data) {
     return Array.isArray(data) ? data : [data];
@@ -37,10 +38,12 @@ function startServer(config, logger) {
 
     app.use((req, res, next) => handleNotFound(req, res, next, logger));
 
-    const listener = app.listen(port, () => {
-        logger.info(`Started server on port ${listener.address().port}`);
-        opn(`http://localhost:${listener.address().port}`);
-    });
+    portfinder.getPortPromise({port})
+        .then(availablePort => app.listen(availablePort, () => {
+            logger.info(`Started server on port ${availablePort}`);
+            opn(`http://localhost:${availablePort}`);
+        }))
+        .catch(error => logger.error(`Could not find an available port: ${error}`));
 }
 
 function run(config, options) {

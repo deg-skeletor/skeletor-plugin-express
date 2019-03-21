@@ -54,7 +54,7 @@ Type: `Number`
 
 Default: `0` (system will select port)
 
-The port that the server should use. *This is an optional config*
+The port that the server should use. If the desired port is busy, the next-available port number will be used instead. *This is an optional config*
 
 **currentDirectory**
 
