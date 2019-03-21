@@ -1,8 +1,10 @@
 const skeletorLocalServer = require('./index');
 
 let express;
+let portfinder;
 jest.mock('express');
 jest.mock('opn');
+jest.mock('portfinder');
 
 const logger = {
     info: () => {},
@@ -15,11 +17,13 @@ describe('local server plugin', () => {
 
     beforeEach(() => {
         express = require('express');
+        portfinder = require('portfinder');
         logInfoSpy = jest.spyOn(logger, 'info');
     });
 
     afterEach(() => {
         express.__resetServer();
+        portfinder.__clearNextAvailablePort();
         logInfoSpy.mockReset();
     });
 
@@ -77,6 +81,34 @@ describe('local server plugin', () => {
         };
         jest.useFakeTimers();
         jest.clearAllTimers();
+
+        return skeletorLocalServer().run(config, options).then(resp => {
+            jest.runAllTimers();
+            expect(logInfoSpy).toHaveBeenCalledTimes(1);
+            expect(logInfoSpy).toHaveBeenCalledWith(expectedMessage);
+            expect(resp).toEqual(expectedResp);
+
+            const currentPort = express.__getPortInUse();
+            expect(currentPort).toBe(expectedPort);
+        });
+    });
+
+    it('should use the next available port', () => {
+        const expectedResp = {
+            status: 'running'
+        };
+        const unavailablePort = 3001;
+        const expectedPort = 3002;
+        const expectedMessage = 'Started server on port 3002';
+        const config = {
+            port: unavailablePort,
+            entryPoints: ['testDir'],
+            currentDirectory: 'testDir'
+        };
+        jest.useFakeTimers();
+        jest.clearAllTimers();
+
+        portfinder.__setNextAvailablePort(3002);
 
         return skeletorLocalServer().run(config, options).then(resp => {
             jest.runAllTimers();
