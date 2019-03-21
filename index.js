@@ -23,7 +23,7 @@ function handleNotFound(req, res, next, logger) {
     res.status(404).send(message);
 }
 
-function startServer(config, logger) {
+async function startServer(config, logger) {
     const app = express();
     const port = config.port || 0;
 
@@ -38,12 +38,16 @@ function startServer(config, logger) {
 
     app.use((req, res, next) => handleNotFound(req, res, next, logger));
 
-    portfinder.getPortPromise({port})
-        .then(availablePort => app.listen(availablePort, () => {
-            logger.info(`Started server on port ${availablePort}`);
-            opn(`http://localhost:${availablePort}`);
-        }))
-        .catch(error => logger.error(`Could not find an available port: ${error}`));
+    try {
+        const availablePort = await portfinder.getPortPromise({port});
+        const listener = app.listen(availablePort, () => {
+            const listenerPort = listener.address().port;
+            logger.info(`Started server on port ${listenerPort}`);
+            opn(`http://localhost:${listenerPort}`);
+        });
+    } catch(error) {
+        logger.error(error);
+    }
 }
 
 function run(config, options) {
