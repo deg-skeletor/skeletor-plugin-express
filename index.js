@@ -1,6 +1,7 @@
 const path = require('path');
 const express = require('express');
 const opn = require('opn');
+const portfinder = require('portfinder');
 
 function ensureArray(data) {
     return Array.isArray(data) ? data : [data];
@@ -22,7 +23,7 @@ function handleNotFound(req, res, next, logger) {
     res.status(404).send(message);
 }
 
-function startServer(config, logger) {
+async function startServer(config, logger) {
     const app = express();
     const port = config.port || 0;
 
@@ -37,10 +38,16 @@ function startServer(config, logger) {
 
     app.use((req, res, next) => handleNotFound(req, res, next, logger));
 
-    const listener = app.listen(port, () => {
-        logger.info(`Started server on port ${listener.address().port}`);
-        opn(`http://localhost:${listener.address().port}`);
-    });
+    try {
+        const availablePort = await portfinder.getPortPromise({port});
+        const listener = app.listen(availablePort, () => {
+            const listenerPort = listener.address().port;
+            logger.info(`Started server on port ${listenerPort}`);
+            opn(`http://localhost:${listenerPort}`);
+        });
+    } catch(error) {
+        logger.error(error);
+    }
 }
 
 function run(config, options) {

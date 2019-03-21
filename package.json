@@ -1,6 +1,6 @@
 {
     "name": "@deg-skeletor/plugin-express",
-    "version": "1.2.0",
+    "version": "1.2.1",
     "description": "A Skeletor plugin to run a local Express server.",
     "main": "index.js",
     "scripts": {
@@ -23,7 +23,8 @@
     "dependencies": {
         "opn": "^5.3.0",
         "path": "^0.12.7",
-        "express": "^4.16.3"
+        "express": "^4.16.3",
+        "portfinder": "^1.0.20"
     },
     "publishConfig": {
         "access": "public"
