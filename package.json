@@ -1,8 +1,11 @@
 {
     "name": "@deg-skeletor/plugin-express",
-    "version": "1.2.3",
+    "version": "1.2.4",
     "description": "A Skeletor plugin to run a local Express server.",
     "main": "index.js",
+    "engines": {
+        "node": "<=9.8.0"
+    },
     "scripts": {
         "test": "jest",
         "lint": "eslint index.js"
