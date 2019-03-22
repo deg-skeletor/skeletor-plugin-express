@@ -1,5 +1,6 @@
 let __routeMap = {};
 let __portInUse = '';
+let __shouldThrowOnListen = false;
 
 function server() {
     return {
@@ -18,6 +19,10 @@ function use(route, val) {
 }
 
 function listen(port, callback) {
+    if(__shouldThrowOnListen) {
+        throw new Error('listen failed');
+    }
+
     __portInUse = port;
     // mocking express.listen() callback system
     setTimeout(callback, 500);
@@ -39,13 +44,19 @@ function __getPortInUse() {
     return __portInUse;
 }
 
+function __setThrowOnListen(shouldThrow) {
+    __shouldThrowOnListen = shouldThrow;
+}
+
 function __resetServer() {
     __routeMap = {};
     __portInUse = '';
+    __shouldThrowOnListen = false;
 }
 
 server.static = staticFn;
 server.__getItemsForRoute = __getItemsForRoute;
 server.__getPortInUse = __getPortInUse;
 server.__resetServer = __resetServer;
+server.__setThrowOnListen = __setThrowOnListen;
 module.exports = server;

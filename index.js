@@ -7,6 +7,14 @@ function ensureArray(data) {
     return Array.isArray(data) ? data : [data];
 }
 
+function fail(error, logger) {
+    logger.error(error);
+    return Promise.reject({
+        status: 'error',
+        error
+    });
+}
+
 function applyMiddleware(app, config) {
     ensureArray(config.middleware).forEach(item => {
         if (item.fn) {
@@ -38,34 +46,28 @@ async function startServer(config, logger) {
 
     app.use((req, res, next) => handleNotFound(req, res, next, logger));
 
-    try {
-        const availablePort = await portfinder.getPortPromise({port});
-        const listener = app.listen(availablePort, () => {
-            const listenerPort = listener.address().port;
-            logger.info(`Started server on port ${listenerPort}`);
-            opn(`http://localhost:${listenerPort}`);
-        });
-    } catch(error) {
-        logger.error(error);
-    }
+    const availablePort = await portfinder.getPortPromise({port});
+    const listener = app.listen(availablePort, () => {
+        const listenerPort = listener.address().port;
+        logger.info(`Started server on port ${listenerPort}`);
+        opn(`http://localhost:${listenerPort}`);
+    });
 }
 
-function run(config, options) {
-    return new Promise((resolve, reject) => {
-        if (config.currentDirectory && config.entryPoints && config.entryPoints.length) {
-            startServer(config, options.logger);
-            resolve({
+async function run(config, {logger}) {
+    if (config.currentDirectory && config.entryPoints && config.entryPoints.length) {
+        try {
+            await startServer(config, logger);
+            return Promise.resolve({
                 status: 'running'
             });
-        } else {
-            const message = `Error with config. Directory: ${config.currentDirectory}, Entry points: ${config.entryPoints}`;
-            options.logger.error(message);
-            reject({
-                status: 'error',
-                message: message
-            });
+        } catch(error) {
+            return fail(error, logger);
         }
-    });
+    } 
+        
+    const message = `Error with config. Directory: ${config.currentDirectory}, Entry points: ${config.entryPoints}`;
+    return fail(new Error(message), logger);   
 }
 
 module.exports = skeletorLocalServer = () => (
