@@ -16,6 +16,7 @@ let logInfoSpy;
 describe('local server plugin', () => {
 
     beforeEach(() => {
+        jest.useFakeTimers();
         express = require('express');
         portfinder = require('portfinder');
         logInfoSpy = jest.spyOn(logger, 'info');
@@ -30,7 +31,7 @@ describe('local server plugin', () => {
     it('should error when no entry points specified', async () => {
         const expectedError = {
             status: 'error',
-            message: 'Error with config. Directory: testDir, Entry points: undefined'
+            error: new Error('Error with config. Directory: testDir, Entry points: undefined')
         };
         const config = {
             currentDirectory: 'testDir'
@@ -41,7 +42,7 @@ describe('local server plugin', () => {
     it('should error when no current directory specified', async () => {
         const expectedError = {
             status: 'error',
-            message: 'Error with config. Directory: undefined, Entry points: testDir'
+            error: new Error('Error with config. Directory: undefined, Entry points: testDir')
         };
         const config = {
             entryPoints: ['testDir']
@@ -49,7 +50,21 @@ describe('local server plugin', () => {
         await expect(skeletorLocalServer().run(config, options)).rejects.toEqual(expectedError);
     });
 
-    it('should log when server starts', () => {
+    it('should error when listen fails', async () => {
+        const expectedError = {
+            status: 'error',
+            error: new Error('listen failed')
+        };
+        const config = {
+            entryPoints: ['testDir'],
+            currentDirectory: 'testDir'
+        };
+        express.__setThrowOnListen(true);
+
+        await expect(skeletorLocalServer().run(config, options)).rejects.toEqual(expectedError);
+    });
+
+    it('should log when server starts', async () => {
         const expectedResp = {
             status: 'running'
         };
@@ -58,17 +73,16 @@ describe('local server plugin', () => {
             entryPoints: ['testDir'],
             currentDirectory: 'testDir'
         };
-        jest.useFakeTimers();
-
-        return skeletorLocalServer().run(config, options).then(resp => {
-            jest.runAllTimers();
-            expect(logInfoSpy).toHaveBeenCalledTimes(1);
-            expect(logInfoSpy).toHaveBeenCalledWith(expectedMessage);
-            expect(resp).toEqual(expectedResp);
-        });
+        
+        const resp = await skeletorLocalServer().run(config, options);
+        jest.runAllTimers();
+        
+        expect(logInfoSpy).toHaveBeenCalledTimes(1);
+        expect(logInfoSpy).toHaveBeenCalledWith(expectedMessage);
+        expect(resp).toEqual(expectedResp);
     });
 
-    it('should have a configurable port', () => {
+    it('should have a configurable port', async () => {
         const expectedResp = {
             status: 'running'
         };
@@ -79,21 +93,18 @@ describe('local server plugin', () => {
             entryPoints: ['testDir'],
             currentDirectory: 'testDir'
         };
-        jest.useFakeTimers();
-        jest.clearAllTimers();
 
-        return skeletorLocalServer().run(config, options).then(resp => {
-            jest.runAllTimers();
-            expect(logInfoSpy).toHaveBeenCalledTimes(1);
-            expect(logInfoSpy).toHaveBeenCalledWith(expectedMessage);
-            expect(resp).toEqual(expectedResp);
+        const resp = await skeletorLocalServer().run(config, options);
+        jest.runAllTimers();
+        expect(logInfoSpy).toHaveBeenCalledTimes(1);
+        expect(logInfoSpy).toHaveBeenCalledWith(expectedMessage);
+        expect(resp).toEqual(expectedResp);
 
-            const currentPort = express.__getPortInUse();
-            expect(currentPort).toBe(expectedPort);
-        });
+        const currentPort = express.__getPortInUse();
+        expect(currentPort).toBe(expectedPort);
     });
 
-    it('should use the next available port', () => {
+    it('should use the next available port', async () => {
         const expectedResp = {
             status: 'running'
         };
@@ -105,24 +116,21 @@ describe('local server plugin', () => {
             entryPoints: ['testDir'],
             currentDirectory: 'testDir'
         };
-        jest.useFakeTimers();
-        jest.clearAllTimers();
 
         portfinder.__setNextAvailablePort(3002);
 
-        return skeletorLocalServer().run(config, options).then(resp => {
-            jest.runAllTimers();
-            expect(logInfoSpy).toHaveBeenCalledTimes(1);
-            expect(logInfoSpy).toHaveBeenCalledWith(expectedMessage);
-            expect(resp).toEqual(expectedResp);
+        const resp = await skeletorLocalServer().run(config, options);
+        jest.runAllTimers();
+        expect(logInfoSpy).toHaveBeenCalledTimes(1);
+        expect(logInfoSpy).toHaveBeenCalledWith(expectedMessage);
+        expect(resp).toEqual(expectedResp);
 
-            const currentPort = express.__getPortInUse();
-            expect(currentPort).toBe(expectedPort);
-        });
+        const currentPort = express.__getPortInUse();
+        expect(currentPort).toBe(expectedPort);
     });
 
     describe('entry point(s)', () => {
-        it('should assign asset path to correct route', () => {
+        it('should assign asset path to correct route', async () => {
             const expectedRouteVals = ['testDir/patternDir', 'testDir/appDir'];
             const config = {
                 entryPoints: [{
@@ -136,18 +144,17 @@ describe('local server plugin', () => {
                 currentDirectory: 'testDir'
             };
 
-            return skeletorLocalServer().run(config, options).then(() => {
-                const patternRouteItems = express.__getItemsForRoute('/patterns');
-                expect(patternRouteItems).toHaveLength(1);
-                expect(patternRouteItems[0]).toEqual(expectedRouteVals[0]);
+            await skeletorLocalServer().run(config, options);
+            const patternRouteItems = express.__getItemsForRoute('/patterns');
+            expect(patternRouteItems).toHaveLength(1);
+            expect(patternRouteItems[0]).toEqual(expectedRouteVals[0]);
 
-                const appRouteItems = express.__getItemsForRoute('/app');
-                expect(appRouteItems).toHaveLength(1);
-                expect(appRouteItems[0]).toEqual(expectedRouteVals[1]);
-            });
+            const appRouteItems = express.__getItemsForRoute('/app');
+            expect(appRouteItems).toHaveLength(1);
+            expect(appRouteItems[0]).toEqual(expectedRouteVals[1]);
         });
 
-        it('should default path to root', () => {
+        it('should default path to root', async () => {
             const expectedRouteVals = ['testDir/patternDir', 'testDir/appDir'];
             const config = {
                 entryPoints: [{
@@ -159,16 +166,15 @@ describe('local server plugin', () => {
                 currentDirectory: 'testDir'
             };
 
-            return skeletorLocalServer().run(config, options).then(() => {
-                const patternRouteItems = express.__getItemsForRoute('/');
-                expect(patternRouteItems).toHaveLength(2);
-                expect(patternRouteItems).toEqual(expectedRouteVals);
-            });
+            await skeletorLocalServer().run(config, options);
+            const patternRouteItems = express.__getItemsForRoute('/');
+            expect(patternRouteItems).toHaveLength(2);
+            expect(patternRouteItems).toEqual(expectedRouteVals);
         });
     });
 
     describe('middleware', () => {
-        it('should default route to /', () => {
+        it('should default route to /', async () => {
             const config = {
                 port: 3001,
                 entryPoints: [{entry: 'testDir'}],
@@ -177,28 +183,28 @@ describe('local server plugin', () => {
                     fn: () => true
                 }]
             };
-            return skeletorLocalServer().run(config, options).then(() => {
-                const routeList = express.__getItemsForRoute('/');
-                expect(routeList).toHaveLength(2);
-                expect(typeof routeList[1]).toBe('function');
-                expect(routeList[1]()).toBe(true);
-            });
+            
+            await skeletorLocalServer().run(config, options);
+            const routeList = express.__getItemsForRoute('/');
+            expect(routeList).toHaveLength(2);
+            expect(typeof routeList[1]).toBe('function');
+            expect(routeList[1]()).toBe(true);
         });
 
-        it('should not apply middleware if no function defined', () => {
+        it('should not apply middleware if no function defined', async () => {
             const config = {
                 port: 3001,
                 entryPoints: [{entry: 'testDir'}],
                 currentDirectory: 'testDir',
                 middleware: [{}]
             };
-            return skeletorLocalServer().run(config, options).then(() => {
-                const routeList = express.__getItemsForRoute('/');
-                expect(routeList).toHaveLength(1);
-            });
+            
+            await skeletorLocalServer().run(config, options);
+            const routeList = express.__getItemsForRoute('/');
+            expect(routeList).toHaveLength(1);
         });
 
-        it('should ensure that config is an array', () => {
+        it('should ensure that config is an array', async () => {
             const config = {
                 port: 3001,
                 entryPoints: [{entry: 'testDir'}],
@@ -207,15 +213,15 @@ describe('local server plugin', () => {
                     fn: () => true
                 }
             };
-            return skeletorLocalServer().run(config, options).then(() => {
-                const routeList = express.__getItemsForRoute('/');
-                expect(routeList).toHaveLength(2);
-                expect(typeof routeList[1]).toBe('function');
-                expect(routeList[1]()).toBe(true);
-            });
+            
+            await skeletorLocalServer().run(config, options);
+            const routeList = express.__getItemsForRoute('/');
+            expect(routeList).toHaveLength(2);
+            expect(typeof routeList[1]).toBe('function');
+            expect(routeList[1]()).toBe(true);
         });
 
-        it('should apply middleware to specified route', () => {
+        it('should apply middleware to specified route', async () => {
             const route = '/hello';
             const config = {
                 port: 3001,
@@ -226,12 +232,12 @@ describe('local server plugin', () => {
                     fn: () => 'hello'
                 }
             };
-            return skeletorLocalServer().run(config, options).then(() => {
-                const routeList = express.__getItemsForRoute('/hello');
-                expect(routeList).toHaveLength(1);
-                expect(typeof routeList[0]).toBe('function');
-                expect(routeList[0]()).toBe('hello');
-            });
+            
+            await skeletorLocalServer().run(config, options);
+            const routeList = express.__getItemsForRoute('/hello');
+            expect(routeList).toHaveLength(1);
+            expect(typeof routeList[0]).toBe('function');
+            expect(routeList[0]()).toBe('hello');
         });
     });
 
