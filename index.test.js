@@ -28,28 +28,6 @@ describe('local server plugin', () => {
         logInfoSpy.mockReset();
     });
 
-    it('should error when no entry points specified', async () => {
-        const expectedError = {
-            status: 'error',
-            error: new Error('Error with config. Directory: testDir, Entry points: undefined')
-        };
-        const config = {
-            currentDirectory: 'testDir'
-        };
-        await expect(skeletorLocalServer().run(config, options)).rejects.toEqual(expectedError);
-    });
-
-    it('should error when no current directory specified', async () => {
-        const expectedError = {
-            status: 'error',
-            error: new Error('Error with config. Directory: undefined, Entry points: testDir')
-        };
-        const config = {
-            entryPoints: ['testDir']
-        };
-        await expect(skeletorLocalServer().run(config, options)).rejects.toEqual(expectedError);
-    });
-
     it('should error when listen fails', async () => {
         const expectedError = {
             status: 'error',
