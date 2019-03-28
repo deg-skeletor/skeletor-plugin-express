@@ -35,7 +35,7 @@ async function startServer(config, logger) {
     const app = express();
     const port = config.port || 0;
 
-    if (config.entryPoints && Array.isArray(config.entryPoints) && config.entryPoints.length > 0) {
+    if (config.currentDirectory && config.entryPoints && Array.isArray(config.entryPoints) && config.entryPoints.length > 0) {
         applyEntryPoints(app, config.currentDirectory, config.entryPoints);
     }
 
@@ -61,16 +61,14 @@ function applyEntryPoints(app, currentDirectory, entryPoints = []) {
 }
 
 async function run(config, {logger}) {
-    if (config.currentDirectory && config.entryPoints && config.entryPoints.length) {
-        try {
-            await startServer(config, logger);
-            return Promise.resolve({
-                status: 'running'
-            });
-        } catch(error) {
-            return fail(error, logger);
-        }
-    } 
+    try {
+        await startServer(config, logger);
+        return Promise.resolve({
+            status: 'running'
+        });
+    } catch(error) {
+        return fail(error, logger);
+    }
         
     const message = `Error with config. Directory: ${config.currentDirectory}, Entry points: ${config.entryPoints}`;
     return fail(new Error(message), logger);   
