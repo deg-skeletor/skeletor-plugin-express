@@ -69,9 +69,6 @@ async function run(config, {logger}) {
     } catch(error) {
         return fail(error, logger);
     }
-        
-    const message = `Error with config. Directory: ${config.currentDirectory}, Entry points: ${config.entryPoints}`;
-    return fail(new Error(message), logger);   
 }
 
 module.exports = skeletorLocalServer = () => (
