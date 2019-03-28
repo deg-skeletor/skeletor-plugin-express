@@ -35,10 +35,9 @@ async function startServer(config, logger) {
     const app = express();
     const port = config.port || 0;
 
-    config.entryPoints.forEach(entry => {
-        const urlPath = entry.route || '/';
-        app.use(urlPath, express.static(path.normalize(`${config.currentDirectory}/${entry.entry}`)));
-    });
+    if (config.currentDirectory && config.entryPoints && Array.isArray(config.entryPoints) && config.entryPoints.length > 0) {
+        applyEntryPoints(app, config.currentDirectory, config.entryPoints);
+    }
 
     if (config.middleware) {
         applyMiddleware(app, config);
@@ -54,17 +53,22 @@ async function startServer(config, logger) {
     });
 }
 
+function applyEntryPoints(app, currentDirectory, entryPoints = []) {
+    entryPoints.forEach(entry => {
+        const urlPath = entry.route || '/';
+        app.use(urlPath, express.static(path.normalize(`${currentDirectory}/${entry.entry}`)));
+    });
+}
+
 async function run(config, {logger}) {
-    if (config.currentDirectory && config.entryPoints && config.entryPoints.length) {
-        try {
-            await startServer(config, logger);
-            return Promise.resolve({
-                status: 'running'
-            });
-        } catch(error) {
-            return fail(error, logger);
-        }
-    } 
+    try {
+        await startServer(config, logger);
+        return Promise.resolve({
+            status: 'running'
+        });
+    } catch(error) {
+        return fail(error, logger);
+    }
         
     const message = `Error with config. Directory: ${config.currentDirectory}, Entry points: ${config.entryPoints}`;
     return fail(new Error(message), logger);   
