@@ -35,10 +35,9 @@ async function startServer(config, logger) {
     const app = express();
     const port = config.port || 0;
 
-    config.entryPoints.forEach(entry => {
-        const urlPath = entry.route || '/';
-        app.use(urlPath, express.static(path.normalize(`${config.currentDirectory}/${entry.entry}`)));
-    });
+    if (config.entryPoints && Array.isArray(config.entryPoints) && config.entryPoints.length > 0) {
+        applyEntryPoints(app, config.currentDirectory, config.entryPoints);
+    }
 
     if (config.middleware) {
         applyMiddleware(app, config);
@@ -51,6 +50,13 @@ async function startServer(config, logger) {
         const listenerPort = listener.address().port;
         logger.info(`Started server on port ${listenerPort}`);
         opn(`http://localhost:${listenerPort}`);
+    });
+}
+
+function applyEntryPoints(app, currentDirectory, entryPoints = []) {
+    entryPoints.forEach(entry => {
+        const urlPath = entry.route || '/';
+        app.use(urlPath, express.static(path.normalize(`${currentDirectory}/${entry.entry}`)));
     });
 }
 
