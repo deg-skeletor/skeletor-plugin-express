@@ -5,6 +5,8 @@ let portfinder;
 jest.mock('express');
 jest.mock('opn');
 jest.mock('portfinder');
+jest.mock('https');
+jest.mock('devcert');
 
 const logger = {
     info: () => {},
@@ -105,6 +107,53 @@ describe('local server plugin', () => {
 
         const currentPort = express.__getPortInUse();
         expect(currentPort).toBe(expectedPort);
+    });
+
+    describe('https', () => {
+        let devcert = require('devcert');
+        let https = require('https');
+        let certificateForSpy;
+        let createServerSpy;
+        
+        beforeAll(() => {
+            certificateForSpy = jest.spyOn(devcert, 'certificateFor');
+            createServerSpy = jest.spyOn(https, 'createServer');
+        });
+
+        afterEach(() => {
+            certificateForSpy.mockClear();
+            createServerSpy.mockClear();
+        });
+
+        it('should run an HTTPS server by default', async () => {
+            const config = {
+                entryPoints: ['testDir'],
+                currentDirectory: 'testDir'
+            };
+            
+            await skeletorLocalServer().run(config, options);
+            jest.runAllTimers();
+            
+            expect(certificateForSpy).toHaveBeenCalledTimes(1);
+            expect(certificateForSpy).toHaveBeenCalledWith('localhost');
+
+            expect(createServerSpy).toHaveBeenCalledTimes(1);
+            expect(createServerSpy).toHaveBeenCalledWith(devcert.__getCertificate(), express.__getServerInstance());
+        });
+
+        it('should not run an HTTPS server if specified in configuration', async () => {
+            const config = {
+                entryPoints: ['testDir'],
+                currentDirectory: 'testDir',
+                https: false
+            };
+            
+            await skeletorLocalServer().run(config, options);
+            jest.runAllTimers();
+            
+            expect(certificateForSpy).not.toHaveBeenCalled();
+            expect(createServerSpy).not.toHaveBeenCalled();
+        });
     });
 
     describe('entry point(s)', () => {

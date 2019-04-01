@@ -34,6 +34,7 @@ The `run()` method executes a plugin's primary task. It is the primary way (and,
 ```
 {
     "port": 3001,
+    "https": true,
     "currentDirectory": __dirname,
     "entryPoints": [
         {
@@ -55,6 +56,14 @@ Type: `Number`
 Default: `0` (system will select port)
 
 The port that the server should use. If the desired port is busy, the next-available port number will be used instead. *This is an optional config*
+
+**https**
+
+Type: `Boolean`
+
+Default: `true`
+
+Creates a development certificate and runs a local HTTPS server. The [devcert](https://www.npmjs.com/package/devcert) utility is used to create the certificate.
 
 **currentDirectory**
 

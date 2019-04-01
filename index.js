@@ -1,4 +1,6 @@
 const path = require('path');
+const devcert = require('devcert');
+const https = require('https');
 const express = require('express');
 const opn = require('opn');
 const portfinder = require('portfinder');
@@ -46,10 +48,20 @@ async function startServer(config, logger) {
     app.use((req, res, next) => handleNotFound(req, res, next, logger));
 
     const availablePort = await portfinder.getPortPromise({port});
-    const listener = app.listen(availablePort, () => {
+
+    let server;
+
+    if(config.https === false) {
+        server = app;
+    } else {
+        const certificate = await devcert.certificateFor('localhost');
+        server = https.createServer(certificate, app);
+    }
+    
+    const listener = server.listen(availablePort, () => {
         const listenerPort = listener.address().port;
         logger.info(`Started server on port ${listenerPort}`);
-        opn(`http://localhost:${listenerPort}`);
+        opn(`https://localhost:${listenerPort}`);
     });
 }
 
