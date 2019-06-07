@@ -1,5 +1,5 @@
 const skeletorLocalServer = require('./index');
-
+const path=require('path');
 let express;
 let portfinder;
 jest.mock('express');
@@ -158,7 +158,7 @@ describe('local server plugin', () => {
 
     describe('entry point(s)', () => {
         it('should assign asset path to correct route', async () => {
-            const expectedRouteVals = ['testDir/patternDir', 'testDir/appDir'];
+            const expectedRouteVals = [path.normalize('testDir/patternDir'), path.normalize('testDir/appDir')];
             const config = {
                 entryPoints: [{
                     entry: 'patternDir',
@@ -182,7 +182,7 @@ describe('local server plugin', () => {
         });
 
         it('should default path to root', async () => {
-            const expectedRouteVals = ['testDir/patternDir', 'testDir/appDir'];
+            const expectedRouteVals = [path.normalize('testDir/patternDir'), path.normalize('testDir/appDir')];
             const config = {
                 entryPoints: [{
                     entry: 'patternDir'
