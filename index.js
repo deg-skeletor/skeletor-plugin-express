@@ -60,8 +60,9 @@ async function startServer(config, logger) {
     
     const listener = server.listen(availablePort, () => {
         const listenerPort = listener.address().port;
+        const protocol = config.https === true ? 'https' : 'http';
         logger.info(`Started server on port ${listenerPort}`);
-        opn(`https://localhost:${listenerPort}`);
+        opn(`${protocol}://localhost:${listenerPort}`);
     });
 }
 
