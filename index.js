@@ -67,7 +67,7 @@ async function startServer(config, logger) {
 }
 
 function openBrowserWindow(config, protocol, listenerPort) {
-    if (!config || !config.openBrowserWindow || config.openBrowserWindow !== false) {
+    if (!config || typeof config.openBrowserWindow === 'undefined' || config.openBrowserWindow !== false) {
         open(`${protocol}://localhost:${listenerPort}`);
     }
 }
