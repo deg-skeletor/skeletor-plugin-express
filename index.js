@@ -62,11 +62,11 @@ async function startServer(config, logger) {
         const listenerPort = listener.address().port;
         const protocol = config.https === false ? 'http' : 'https';
         logger.info(`Started server on port ${listenerPort}`);
-        openBrowserWindow(config);
+        openBrowserWindow(config, protocol, listenerPort);
     });
 }
 
-function openBrowserWindow(config) {
+function openBrowserWindow(config, protocol, listenerPort) {
     if (!config || !config.openBrowserWindow || config.openBrowserWindow !== false) {
         open(`${protocol}://localhost:${listenerPort}`);
     }
