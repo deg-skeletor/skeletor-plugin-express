@@ -2,7 +2,7 @@ const path = require('path');
 const devcert = require('devcert');
 const https = require('https');
 const express = require('express');
-const opn = require('opn');
+const open = require('open');
 const portfinder = require('portfinder');
 
 function ensureArray(data) {
@@ -62,8 +62,14 @@ async function startServer(config, logger) {
         const listenerPort = listener.address().port;
         const protocol = config.https === false ? 'http' : 'https';
         logger.info(`Started server on port ${listenerPort}`);
-        opn(`${protocol}://localhost:${listenerPort}`);
+        openBrowserWindow(config);
     });
+}
+
+function openBrowserWindow(config) {
+    if (!config || !config.openBrowserWindow || config.openBrowserWindow !== false) {
+        open(`${protocol}://localhost:${listenerPort}`);
+    }
 }
 
 function applyEntryPoints(app, currentDirectory, entryPoints = []) {
